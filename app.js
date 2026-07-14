@@ -1,6 +1,9 @@
 const PYODIDE_INDEX = "https://cdn.jsdelivr.net/pyodide/v314.0.2/full/";
-const ASSET_VERSION = "20260714-2";
+const ASSET_VERSION = "20260714-3";
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const PREVIEW_ZOOM_MIN = 0.45;
+const PREVIEW_ZOOM_MAX = 1.25;
+const PREVIEW_ZOOM_STEP = 0.1;
 
 const elements = {
   input: document.querySelector("#file-input"),
@@ -22,13 +25,18 @@ const elements = {
   reviewStatus: document.querySelector("#review-status"),
   qcList: document.querySelector("#qc-list"),
   qcSummary: document.querySelector("#qc-summary"),
-  previewList: document.querySelector("#preview-list"),
   previewCount: document.querySelector("#preview-count"),
+  previewViewport: document.querySelector("#docx-preview-viewport"),
+  previewPages: document.querySelector("#docx-preview-pages"),
+  zoomOut: document.querySelector("#zoom-out"),
+  zoomIn: document.querySelector("#zoom-in"),
+  zoomLabel: document.querySelector("#zoom-label"),
 };
 
 let pyodideRuntime = null;
 let selectedFile = null;
 let downloadUrl = null;
+let previewZoom = 0.65;
 
 function setEngineState(type, text) {
   elements.engine.className = `engine-state ${type}`;
@@ -43,6 +51,51 @@ function setStatus(text, error = false) {
 function setProgress(value) {
   elements.progressTrack.classList.remove("hidden");
   elements.progressBar.style.width = `${value}%`;
+}
+
+function applyPreviewZoom() {
+  elements.previewPages.style.zoom = String(previewZoom);
+  elements.zoomLabel.textContent = `${Math.round(previewZoom * 100)}%`;
+  elements.zoomOut.disabled = previewZoom <= PREVIEW_ZOOM_MIN;
+  elements.zoomIn.disabled = previewZoom >= PREVIEW_ZOOM_MAX;
+}
+
+function changePreviewZoom(delta) {
+  previewZoom = Math.min(PREVIEW_ZOOM_MAX, Math.max(PREVIEW_ZOOM_MIN, previewZoom + delta));
+  previewZoom = Math.round(previewZoom * 100) / 100;
+  applyPreviewZoom();
+}
+
+async function renderDocumentPreview(outputBytes) {
+  elements.previewPages.replaceChildren();
+  elements.previewCount.textContent = "Đang dựng trang…";
+  if (!globalThis.docx?.renderAsync) {
+    throw new Error("Không tải được thư viện xem trước DOCX.");
+  }
+
+  await globalThis.docx.renderAsync(outputBytes.slice(), elements.previewPages, elements.previewPages, {
+    inWrapper: true,
+    breakPages: true,
+    ignoreLastRenderedPageBreak: false,
+    renderHeaders: true,
+    renderFooters: true,
+    useBase64URL: true,
+    experimental: false,
+    debug: false,
+  });
+
+  const pageCount = elements.previewPages.querySelectorAll("section.docx").length || 1;
+  elements.previewCount.textContent = `${pageCount} trang`;
+  applyPreviewZoom();
+  elements.previewViewport.scrollTo({ top: 0, left: 0 });
+}
+
+function renderPreviewError(error) {
+  const message = document.createElement("p");
+  message.className = "preview-error";
+  message.textContent = error.message || "Không thể dựng bản xem trước DOCX.";
+  elements.previewPages.replaceChildren(message);
+  elements.previewCount.textContent = "Lỗi preview";
 }
 
 function formatBytes(bytes) {
@@ -134,7 +187,7 @@ function addQcItem(text, type = "success") {
 }
 
 function renderReview(data) {
-  const { report, previews } = data;
+  const { report } = data;
   elements.emptyReview.classList.add("hidden");
   elements.reviewContent.classList.remove("hidden");
   document.querySelector("#metric-questions").textContent = report.questions_found;
@@ -158,21 +211,8 @@ function renderReview(data) {
   elements.reviewStatus.textContent = hasErrors ? "Có lỗi" : hasWarnings ? "Cần kiểm tra" : "Đạt QC";
   elements.qcSummary.textContent = hasErrors ? `${report.errors.length} lỗi` : hasWarnings ? `${report.warnings.length} cảnh báo` : "Không có cảnh báo";
 
-  elements.previewList.replaceChildren();
-  previews.forEach((group) => {
-    group.items.forEach((text, index) => {
-      const article = document.createElement("article");
-      article.className = "preview-item";
-      const heading = document.createElement("strong");
-      heading.textContent = `${group.question} · Ý ${index + 1}`;
-      const paragraph = document.createElement("p");
-      paragraph.textContent = text;
-      article.append(heading, paragraph);
-      elements.previewList.appendChild(article);
-    });
-  });
-  const previewTotal = previews.reduce((total, group) => total + group.items.length, 0);
-  elements.previewCount.textContent = `${previewTotal} ý`;
+  elements.previewPages.replaceChildren();
+  elements.previewCount.textContent = "Đang dựng trang…";
 }
 
 async function generateDocument() {
@@ -208,6 +248,12 @@ async function generateDocument() {
 
     setProgress(88);
     const outputBytes = pyodideRuntime.FS.readFile("/output.docx");
+    try {
+      await renderDocumentPreview(outputBytes);
+    } catch (previewError) {
+      console.error(previewError);
+      renderPreviewError(previewError);
+    }
     if (downloadUrl) URL.revokeObjectURL(downloadUrl);
     downloadUrl = URL.createObjectURL(new Blob([outputBytes], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -233,6 +279,8 @@ async function generateDocument() {
 elements.input.addEventListener("change", (event) => selectFile(event.target.files[0]));
 elements.removeFile.addEventListener("click", resetFile);
 elements.generate.addEventListener("click", generateDocument);
+elements.zoomOut.addEventListener("click", () => changePreviewZoom(-PREVIEW_ZOOM_STEP));
+elements.zoomIn.addEventListener("click", () => changePreviewZoom(PREVIEW_ZOOM_STEP));
 elements.dropZone.addEventListener("dragover", (event) => {
   event.preventDefault();
   elements.dropZone.classList.add("dragover");
@@ -245,3 +293,4 @@ elements.dropZone.addEventListener("drop", (event) => {
 });
 
 prepareRuntime();
+applyPreviewZoom();

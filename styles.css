@@ -119,10 +119,18 @@ h1 span { color: var(--teal); }
 .qc-list li.warning::before { content: "!"; color: #b47616; }
 .qc-list li.error { background: #fff0f0; }
 .qc-list li.error::before { content: "×"; color: var(--error); }
-.preview-list { max-height: 330px; overflow: auto; display: grid; gap: 8px; padding-right: 4px; }
-.preview-item { padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: white; }
-.preview-item strong { display: block; margin-bottom: 7px; color: var(--teal-dark); font-size: .74rem; }
-.preview-item p { margin: 0; color: #3d585b; font-family: Georgia, "Times New Roman", serif; font-size: .82rem; line-height: 1.5; }
+.docx-preview-shell { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #e8edeb; }
+.preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 11px; border-bottom: 1px solid #d4ddda; background: #f7f9f7; color: var(--muted); font-size: .7rem; font-weight: 800; }
+.zoom-controls { display: flex; align-items: center; gap: 7px; }
+.zoom-controls button { width: 27px; height: 27px; display: grid; place-items: center; padding: 0; border: 1px solid #cfdad6; border-radius: 8px; color: var(--teal-dark); background: white; cursor: pointer; font-weight: 900; }
+.zoom-controls button:hover:not(:disabled) { border-color: var(--teal); background: #eff8f5; }
+.zoom-controls button:disabled { cursor: not-allowed; opacity: .38; }
+.zoom-controls output { min-width: 37px; text-align: center; color: var(--ink); font-size: .68rem; }
+.docx-preview-viewport { max-height: 680px; min-height: 360px; overflow: auto; padding: 18px; scrollbar-color: #9eb4ae transparent; }
+.docx-preview-pages { width: max-content; min-width: 100%; transform-origin: top left; }
+.docx-preview-pages .docx-wrapper { padding: 0 !important; background: transparent !important; }
+.docx-preview-pages section.docx { margin: 0 auto 18px !important; box-shadow: 0 8px 24px rgba(28, 59, 58, .18) !important; }
+.preview-error { max-width: 340px; margin: 90px auto; padding: 14px; border-radius: 12px; color: var(--error); background: #fff0f0; text-align: center; font-size: .78rem; line-height: 1.5; }
 
 footer { display: flex; justify-content: space-between; gap: 24px; padding: 24px 5px 0; color: var(--muted); font-size: .76rem; }
 footer p { margin: 0; }
@@ -144,5 +152,7 @@ footer p { margin: 0; }
   .download-card { align-items: stretch; flex-direction: column; }
   .download-button { text-align: center; }
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  .docx-preview-viewport { min-height: 300px; padding: 10px; }
+  .preview-toolbar { align-items: flex-start; flex-direction: column; }
   footer { flex-direction: column; gap: 7px; }
 }
