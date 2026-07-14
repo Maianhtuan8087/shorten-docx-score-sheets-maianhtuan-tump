@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Chuyển file đáp án DOCX thành phiếu chấm rút gọn ngay trong trình duyệt."
+    />
+    <meta name="theme-color" content="#0a6f78" />
+    <title>shorten-docx-score-sheets-maianhtuan-tump</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v314.0.2/full/pyodide.js"></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true"><span>0,25</span></div>
+          <div class="privacy-badge"><span class="privacy-dot"></span>Xử lý cục bộ trên trình duyệt</div>
+        </div>
+        <p class="eyebrow">DOCX GRADING SHEET STUDIO</p>
+        <h1>shorten-docx-score-sheets-<span>maianhtuan-tump</span></h1>
+        <p class="hero-copy">
+          Chuyển file đáp án thành phiếu chấm rút gọn, giữ cấu trúc bảng và tự động tạo báo cáo kiểm tra.
+        </p>
+        <div class="author-line">
+          <strong>Mai Anh Tuấn TUMP</strong>
+          <span></span>
+          <p>Social Medicine Public Health</p>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel input-panel" aria-labelledby="input-title">
+          <div class="panel-heading">
+            <div>
+              <p class="step-label">BƯỚC 01</p>
+              <h2 id="input-title">Chọn file đáp án</h2>
+            </div>
+            <div class="engine-state loading" id="engine-state" role="status">
+              <span></span><b>Đang chuẩn bị bộ xử lý…</b>
+            </div>
+          </div>
+
+          <label class="drop-zone" id="drop-zone" for="file-input">
+            <input id="file-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <strong>Kéo thả file DOCX vào đây</strong>
+            <span>hoặc nhấn để chọn file từ máy tính</span>
+            <small>Tối đa 25 MB · File không được tải lên máy chủ</small>
+          </label>
+
+          <div class="file-card hidden" id="file-card">
+            <div class="file-icon">W</div>
+            <div class="file-meta">
+              <strong id="file-name"></strong>
+              <span id="file-size"></span>
+            </div>
+            <button type="button" class="icon-button" id="remove-file" aria-label="Bỏ file đã chọn">×</button>
+          </div>
+
+          <div class="action-area">
+            <button class="primary-button" id="generate-button" type="button" disabled>
+              <span class="button-label">Tạo phiếu chấm</span>
+              <span class="button-arrow">→</span>
+            </button>
+            <p class="status-text" id="status-text" aria-live="polite">Chọn một file DOCX để bắt đầu.</p>
+            <div class="progress-track hidden" id="progress-track"><span id="progress-bar"></span></div>
+          </div>
+
+          <div class="download-card hidden" id="download-card">
+            <div>
+              <span class="success-check">✓</span>
+              <div><strong>Phiếu chấm đã sẵn sàng</strong><small id="output-name"></small></div>
+            </div>
+            <a class="download-button" id="download-link" download>Tải file DOCX</a>
+          </div>
+        </section>
+
+        <aside class="panel review-panel" aria-labelledby="review-title">
+          <div class="panel-heading review-heading">
+            <div>
+              <p class="step-label">BƯỚC 02</p>
+              <h2 id="review-title">Review kết quả</h2>
+            </div>
+            <span class="review-status idle" id="review-status">Chờ xử lý</span>
+          </div>
+
+          <div class="empty-review" id="empty-review">
+            <div class="empty-graphic" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <strong>Chưa có dữ liệu review</strong>
+            <p>Kết quả QC, cảnh báo và nội dung rút gọn sẽ xuất hiện tại đây.</p>
+          </div>
+
+          <div class="review-content hidden" id="review-content">
+            <div class="metric-grid">
+              <article><span>Câu hỏi</span><strong id="metric-questions">0</strong></article>
+              <article><span>Dòng 0,25</span><strong id="metric-rows">0</strong></article>
+              <article><span>Đã rút gọn</span><strong id="metric-shortened">0</strong></article>
+              <article><span>Dấu … tự nhiên</span><strong id="metric-ellipsis">0</strong></article>
+            </div>
+
+            <section class="qc-block">
+              <div class="section-title"><h3>Kiểm tra chất lượng</h3><span id="qc-summary"></span></div>
+              <ul class="qc-list" id="qc-list"></ul>
+            </section>
+
+            <section class="preview-block">
+              <div class="section-title"><h3>Xem trước nội dung</h3><span id="preview-count"></span></div>
+              <div class="preview-list" id="preview-list"></div>
+            </section>
+          </div>
+        </aside>
+      </main>
+
+      <footer>
+        <p><strong>Mai Anh Tuấn TUMP</strong> · Social Medicine Public Health</p>
+        <p>DOCX được xử lý trong bộ nhớ của trình duyệt và không rời khỏi thiết bị.</p>
+      </footer>
+    </div>
+  </body>
+</html>
