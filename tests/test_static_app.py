@@ -12,6 +12,9 @@ def test_required_static_files_exist():
         "styles.css",
         "app.js",
         "processor.py",
+        "streamlit_app.py",
+        "requirements.txt",
+        ".streamlit/config.toml",
         "assets/grading-sheet-template.docx",
     ):
         assert (ROOT / relative).is_file(), relative
@@ -64,3 +67,16 @@ def test_processor_loads_without_dunder_file_like_pyodide():
 
     assert namespace["_SCRIPT_DIR"] == Path.cwd()
     assert callable(namespace["process_docx"])
+
+
+def test_streamlit_entrypoint_and_dependencies():
+    source = (ROOT / "streamlit_app.py").read_text(encoding="utf-8")
+    compile(source, "streamlit_app.py", "exec")
+    requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines()
+
+    assert "streamlit==1.59.2" in requirements
+    assert "python-docx==1.2.0" in requirements
+    assert "from processor import process_docx" in source
+    assert "render_docx_preview(output_bytes)" in source
+    assert 'st.iframe(preview_html, width="stretch", height=760)' in source
+    assert "streamlit.components.v1" not in source

@@ -34,3 +34,20 @@ Workflow GitHub Pages nằm tại `.github/workflows/pages.yml`. Bật Pages v�
 
 Mai Anh Tuấn TUMP  
 Social Medicine Public Health
+
+## Chạy bằng Streamlit
+
+Repository có thêm entrypoint `streamlit_app.py` cho Streamlit Community Cloud.
+
+```powershell
+python -m pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+Khi deploy tại `share.streamlit.io`, chọn:
+
+- Repository: `Maianhtuan8087/shorten-docx-score-sheets-maianhtuan-tump`
+- Branch: `main`
+- Main file path: `streamlit_app.py`
+
+Khác biệt quan trọng: bản GitHub Pages xử lý DOCX hoàn toàn trong trình duyệt; bản Streamlit gửi file lên máy chủ Streamlit để Python xử lý tạm thời.
