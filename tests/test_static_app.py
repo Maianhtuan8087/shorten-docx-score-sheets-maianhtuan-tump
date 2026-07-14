@@ -26,6 +26,8 @@ def test_interface_contains_requested_content():
     assert 'id="generate-button"' in html
     assert 'id="review-content"' in html
     assert 'id="download-link"' in html
+    assert "DOCX GRADING SHEET STUDIO" not in html
+    assert 'class="brand-row"' not in html
 
 
 def test_template_is_a_readable_docx():

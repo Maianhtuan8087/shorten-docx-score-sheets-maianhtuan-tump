@@ -29,19 +29,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .page-shell { width: min(1440px, calc(100% - 48px)); margin: 0 auto; padding: 34px 0 24px; }
 .hero { padding: 10px 4px 38px; }
-.brand-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.brand-mark {
-  width: 64px; height: 64px; display: grid; place-items: center; border-radius: 20px;
-  background: var(--teal); color: white; box-shadow: 8px 8px 0 var(--lime); transform: rotate(-2deg);
-}
-.brand-mark span { font-weight: 900; font-size: 1rem; transform: rotate(2deg); }
-.privacy-badge {
-  display: inline-flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid #cbdcd5;
-  border-radius: 999px; color: var(--teal-dark); background: rgba(255, 255, 255, 0.62); font-weight: 700; font-size: .82rem;
-}
-.privacy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px rgba(185,217,76,.18); }
-.eyebrow, .step-label { margin: 0; color: var(--teal); font-size: .72rem; font-weight: 900; letter-spacing: .2em; }
-.eyebrow { margin-top: 40px; }
+.step-label { margin: 0; color: var(--teal); font-size: .72rem; font-weight: 900; letter-spacing: .2em; }
 h1 { max-width: 1120px; margin: 12px 0 16px; font-size: clamp(2.35rem, 6vw, 5.5rem); line-height: .97; letter-spacing: -.055em; overflow-wrap: anywhere; }
 h1 span { color: var(--teal); }
 .hero-copy { max-width: 760px; margin: 0; color: #456467; font-size: clamp(1rem, 2vw, 1.24rem); line-height: 1.65; }
@@ -148,8 +136,6 @@ footer p { margin: 0; }
 @media (max-width: 620px) {
   .page-shell { width: min(100% - 24px, 1440px); padding-top: 18px; }
   .hero { padding-bottom: 26px; }
-  .privacy-badge { font-size: .68rem; }
-  .brand-mark { width: 54px; height: 54px; border-radius: 17px; }
   .author-line { align-items: flex-start; flex-direction: column; gap: 4px; }
   .author-line span { display: none; }
   .input-panel, .review-panel { padding: 20px; border-radius: 22px; }
