@@ -1,4 +1,5 @@
 const PYODIDE_INDEX = "https://cdn.jsdelivr.net/pyodide/v314.0.2/full/";
+const ASSET_VERSION = "20260714-2";
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const elements = {
@@ -95,10 +96,11 @@ async function prepareRuntime() {
     await micropip.install("python-docx==1.2.0");
     micropip.destroy();
 
-    const processorResponse = await fetch("./processor.py");
+    const processorResponse = await fetch(`./processor.py?v=${ASSET_VERSION}`, { cache: "no-store" });
     if (!processorResponse.ok) throw new Error("Không tải được bộ quy tắc xử lý.");
     const processorSource = await processorResponse.text();
     const librarySource = processorSource.split('\nif __name__ == "__main__":')[0];
+    pyodideRuntime.globals.set("__file__", "/processor.py");
     pyodideRuntime.runPython(librarySource);
     pyodideRuntime.runPython(`
 def process_for_web(input_path, output_path, template_path):

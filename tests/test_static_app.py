@@ -28,6 +28,14 @@ def test_interface_contains_requested_content():
     assert 'id="download-link"' in html
     assert "DOCX GRADING SHEET STUDIO" not in html
     assert 'class="brand-row"' not in html
+    assert 'src="./app.js?v=20260714-2"' in html
+
+
+def test_browser_runtime_sets_pyodide_file_and_cache_busts_processor():
+    javascript = (ROOT / "app.js").read_text(encoding="utf-8")
+    assert 'const ASSET_VERSION = "20260714-2"' in javascript
+    assert 'fetch(`./processor.py?v=${ASSET_VERSION}`, { cache: "no-store" })' in javascript
+    assert 'pyodideRuntime.globals.set("__file__", "/processor.py")' in javascript
 
 
 def test_template_is_a_readable_docx():
