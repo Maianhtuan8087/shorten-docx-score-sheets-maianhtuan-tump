@@ -31,7 +31,8 @@ HEADERS = {
     "câu số",
     "điểm chấm",
 }
-_SCRIPT_DIR = Path(__file__).resolve().parent
+_SCRIPT_PATH = globals().get("__file__")
+_SCRIPT_DIR = Path(_SCRIPT_PATH).resolve().parent if _SCRIPT_PATH else Path.cwd()
 _PROJECT_TEMPLATE = _SCRIPT_DIR / "assets" / "grading-sheet-template.docx"
 _SKILL_TEMPLATE = _SCRIPT_DIR.parent / "assets" / "grading-sheet-template.docx"
 DEFAULT_TEMPLATE = _PROJECT_TEMPLATE if _PROJECT_TEMPLATE.exists() else _SKILL_TEMPLATE

@@ -38,3 +38,14 @@ def test_template_is_a_readable_docx():
 def test_processor_compiles():
     source = (ROOT / "processor.py").read_text(encoding="utf-8")
     compile(source, "processor.py", "exec")
+
+
+def test_processor_loads_without_dunder_file_like_pyodide():
+    source = (ROOT / "processor.py").read_text(encoding="utf-8")
+    library_source = source.split('\nif __name__ == "__main__":')[0]
+    namespace = {"__name__": "__main__"}
+
+    exec(compile(library_source, "processor.py", "exec"), namespace)
+
+    assert namespace["_SCRIPT_DIR"] == Path.cwd()
+    assert callable(namespace["process_docx"])
